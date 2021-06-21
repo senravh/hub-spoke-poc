@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "green"
+        },
+        "vnetName": {
+            "value": "hub-vnet"
+        },
+        "vnetAddressPrefix": {
+            "value": "10.0.0.0/16"
+        },
+        "subnetsConfiguration": {
+            "value": [
+                {
+                    "name": "GatewaySubnet",
+                    "addressPrefix": "10.0.0.0/27",
+                    "nsgName": "",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                },
+                {
+                    "name": "AzureFirewallSubnet",
+                    "addressPrefix": "10.0.0.32/27",
+                    "nsgName": "",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                },
+                {
+                    "name": "AzureBastionSubnet",
+                    "addressPrefix": "10.0.0.64/27",
+                    "nsgName": "",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                },
+                {
+                    "name": "DcSubnet-green",
+                    "addressPrefix": "10.0.0.96/27",
+                    "nsgName": "",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                },
+                {
+                    "name": "MngSubnet-green",
+                    "addressPrefix": "10.0.1.0/24",
+                    "nsgName": "mngSubnet-nsg",
+                    "privateEndpointNetworkPolicies": "disabled"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "green"
+        },
+        "privateDnsZoneSettings": {
+            "value": [
+                {
+                    "properties": {
+                        "PrivateDnsZoneName":"privatelink.westeurope.backup.windowsazure.com",
+                        "PrivateDnsZoneLinkName": "hub-vnet",
+                        "registrationEnabled": false,
+                        "virtualNetwork": "hub-vnet"
+                    }
+                },
+                {
+                    "properties": {
+                        "PrivateDnsZoneName":"privatelink.westeurope.backup.windowsazure.com",
+                        "PrivateDnsZoneLinkName": "spoke-vnet",
+                        "registrationEnabled": false,
+                        "virtualNetwork": "spoke-vnet"
+                    }
+                }
+            ]
+        }
+    }
+}

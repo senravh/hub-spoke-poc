@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of environment. blue/green"
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of vnet"
+            }
+        },
+        "vnetAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "The prefix address for this vnet"
+            }
+        },
+        "subnetsConfiguration": {
+            "type": "array",
+            "metadata": {
+                "description": "all subnets configuration for the vnet"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('vnetName'),'-',parameters('environment'))]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefix')]"
+                    ]
+                },
+                "copy": [
+                    {
+                        "name": "subnets",
+                        "count": "[length(parameters('subnetsConfiguration'))]",
+                        "input": {
+                            "name": "[concat(parameters('subnetsConfiguration')[copyIndex('subnets')].name)]",
+                            /*Not possible to use $environment as part of the subnet name in this copy loop, because firewall,bastion and gateway subnet does not allow it. Landed on hardcoding the $environment as part of the names in the parameter file*/
+                            "properties": {
+                                "addressPrefix": "[parameters('subnetsConfiguration')[copyIndex('subnets')].addressPrefix]",
+                                "networkSecurityGroup": "[if(equals(parameters('subnetsConfiguration')[copyIndex('subnets')].nsgName,''),json('null'),json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups/', concat(parameters('subnetsConfiguration')[copyIndex('subnets')].nsgName)),'-',parameters('environment'), '\"}')))]",
+                                /* if the parameter value "nsgName" is empty then the object "networkSecurityGroup" is set to Null...else the object is populated with the parameter value of "nsgName" + $environment value. An object can have a NULL value */
+                                "privateEndpointNetworkPolicies": "[parameters('subnetsConfiguration')[copyIndex('subnets')].privateEndpointNetworkPolicies]"
+                                /*privateEndpointNetworkPolicies" is by default enabled, but needed to set this to disabled for the management subnet. The Recovery services private endpoint has a requirement that the privateEndpointNetworkPolicies is set to disabled */
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

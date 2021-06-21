@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "blue"
+        },
+        "SkuName": {
+            "value": "RS0"
+        },
+        "SkuTier": {
+            "value": "standard"
+        },
+        "RSVname": {
+            "value": "hub-rsv"
+        },
+        "resourcetags": {
+            "value": {
+                "costcenter": "CIO",
+                "owner": "Team-Platform"
+            }
+        }
+    }
+}

@@ -1,0 +1,115 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "green"
+        },
+        "resourcetags": {
+            "value": {
+                "costcenter": "CEO",
+                "owner": "Team-Platform"
+            }
+        },
+        "NSGs": {
+            "value": [
+                {
+                    "properties": {
+                        "NSGName": "WebSubnet-nsg",
+                        "securityRules": [
+                            {
+                                "name": "BastionAllow",
+                                "properties": {
+                                    "description": "allow RDP and SSH connections from BastionSubnet to Web Subnet",
+                                    "direction": "Inbound",
+                                    "priority": 150,
+                                    "sourceAddressPrefix": "10.0.0.64/27",
+                                    "sourcePortRange": "*",
+                                    "destinationAddressPrefix":"10.1.0.0/24",
+                                    "destinationPortRanges": 
+                                    [
+                                    "3389","22"
+                                    ],
+                                    "access": "Allow",
+                                    "protocol": "Tcp"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "NSGName": "DbSubnet-nsg",
+                        "securityRules": [
+                            {
+                                "name": "BastionAllow",
+                                "properties": {
+                                    "description": "allow RDP and SSH connections from BastionSubnet to Database Subnet",
+                                    "direction": "Inbound",
+                                    "priority": 150,
+                                    "sourceAddressPrefix": "10.0.0.64/27",
+                                    "sourcePortRange": "*",
+                                    "destinationAddressPrefix":"10.1.1.0/24",
+                                    "destinationPortRanges": 
+                                    [
+                                    "3389","22"
+                                    ],
+                                    "access": "Allow",
+                                    "protocol": "Tcp"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "NSGName": "DcSubnet-nsg",
+                        "securityRules": [
+                            {
+                                "name": "BastionAllow",
+                                "properties": {
+                                    "description": "allow RDP and SSH connections from BastionSubnet to Domain Controller Subnet",
+                                    "direction": "Inbound",
+                                    "priority": 150,
+                                    "sourceAddressPrefix": "10.0.0.64/27",
+                                    "sourcePortRange": "*",
+                                    "destinationAddressPrefix":"10.0.0.96/27",
+                                    "destinationPortRanges": 
+                                    [
+                                    "3389","22"
+                                    ],
+                                    "access": "Allow",
+                                    "protocol": "Tcp"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "properties": {
+                        "NSGName": "MngSubnet-nsg",
+                        "securityRules": [
+                            {
+                                "name": "BastionAllow",
+                                "properties": {
+                                    "description": "allow RDP and SSH connections from BastionSubnet to Domain Controller Subnet",
+                                    "direction": "Inbound",
+                                    "priority": 150,
+                                    "sourceAddressPrefix": "10.0.0.64/27",
+                                    "sourcePortRange": "*",
+                                    "destinationAddressPrefix":"10.0.1.0/24",
+                                    "destinationPortRanges": 
+                                    [
+                                    "3389","22"
+                                    ],
+                                    "access": "Allow",
+                                    "protocol": "Tcp"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

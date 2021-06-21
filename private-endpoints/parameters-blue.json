@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "blue"
+        },
+        "PrivateEndpointSettings": {
+            "value": [
+                {
+                    "properties":{
+                        "PrivateEndpointName": "backup-endpoint",
+                        "privateLinkConnectionName": "backup-endpoint-connection",
+                        "resourceType": "Microsoft.RecoveryServices/vaults",
+                        "resourceName": "hub-rsv",
+                        "targetSubResource": "AzureBackup",
+                        "Vnet": "hub-vnet",
+                        "Subnet": "MngSubnet",
+                        "privateDnsZoneName": "privatelink-northeurope-backup-windowsazure-com",
+                        "privateDnsZone": "privatelink.northeurope.backup.windowsazure.com",
+                        "PrivateDnsZoneId": "Microsoft.Network/privateDnsZones"
+                    }
+                }
+            ]
+        }
+    }
+}

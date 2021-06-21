@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Blue or Green"
+            }
+        },
+        "privateDnsZoneSettings": {
+            "type": "array",
+            "metadata": {
+                "description": "Array with the nummer of Zones to create and all related properties"
+            }
+        }   
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2018-09-01",
+            "name": "[concat(parameters('privatednszonesettings')[copyIndex('links')].properties.PrivateDnsZoneName, '/', parameters('privatednszonesettings')[copyIndex('links')].properties.PrivateDnsZoneLinkName,'-',parameters('environment'),'-link')]",
+            "location": "global",
+            "copy": {
+                "name": "Links",
+                "count": "[length(parameters('privateDnsZoneSettings'))]"
+            },
+            "properties": {
+                "registrationEnabled": "[parameters('privatednszonesettings')[copyIndex('links')].properties.registrationEnabled]",
+                    "virtualNetwork": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(parameters('privatednszonesettings')[copyIndex('links')].properties.virtualNetwork,'-',parameters('environment')))]"
+                    }
+            }
+        }
+    ],
+    "outputs": {}
+}

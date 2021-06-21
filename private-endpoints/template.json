@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Blue or Green"
+            }
+        },
+        "PrivateEndpointSettings": {
+            "type": "array",
+            "metadata": {
+                "description": "List of all settings for each private endpoint"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.PrivateEndpointName,'-',parameters('environment'))]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "location": "[resourceGroup().Location]",
+            "copy": {
+                "name": "PrivateEndpoint",
+                "count":"[length(parameters('PrivateEndpointSettings'))]"
+            },
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.privateLinkConnectionName,'-',parameters('environment'))]",
+                        "properties": {
+                            "privateLinkServiceId":"[resourceId(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.resourceType,concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.resourceName,'-',parameters('environment')))]",
+                            "groupIds": [
+                                "[concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.targetSubResource)]"
+                            ]
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.vnet,'-',parameters('environment')), concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.subnet,'-',parameters('environment')))]"
+                }
+            }
+        },
+        {        
+            "type":"Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2020-06-01",
+            "name": "[concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.PrivateEndpointName,'-',parameters('environment'),'/default')]",
+            "location": "[resourceGroup().Location]",
+            "copy": {
+                "name": "PrivateEndpoint",
+                "count":"[length(parameters('PrivateEndpointSettings'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/PrivateEndpoints',concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.PrivateEndpointName,'-',parameters('environment')))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [ // linking the dns zone with private link of Recovery Services Vault. pre-req to automate the creating of the dns A records for the private link network interface
+                {
+                "name": "[concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.privateDnsZoneName)]",
+                    "properties": {
+                         "privateDnsZoneId": "[resourceId(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.PrivateDnsZoneId,concat(parameters('PrivateEndpointSettings')[copyIndex('PrivateEndpoint')].properties.privateDnsZone))]"
+                    }
+                }     
+                ]       
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "environment": {
+        "type": "string",
+        "metadata": {
+          "description": "Blue or Green"
+        }
+      },
+      "vnetlocal": {
+        "type": "string",
+        "metadata": {
+          "description": "Set the local VNet name"
+        }
+      },
+      "vnetremote": {
+        "type": "string",
+        "metadata": {
+          "description": "Set the remote VNet name"
+        }
+      },
+      "ResourceGroupName": {
+        "type": "string",
+        "metadata": {
+          "description": "Sets the remote VNet Resource group"
+        }
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": {
+          "description": "Location for all resources."
+        }
+      }
+    },
+    "variables": { 
+      "vnetremote": "[concat(parameters('vnetremote'),'-',parameters('environment'))]",
+      "vnetlocal": "[concat(parameters('vnetlocal'),'-',parameters('environment'))]"
+    },
+    "resources": [
+      {
+        "apiVersion": "2019-11-01",
+        "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+        "name": "[concat(variables('vnetlocal'), '/peering-to-spoke-vnet','-',parameters('environment'))]",
+        "location": "[parameters('location')]",
+        "comments": "This is the peering from hubvnet to spokevnet",
+        "properties": {
+          "allowVirtualNetworkAccess": true,
+          "allowForwardedTraffic": false,
+          "allowGatewayTransit": false,
+          "useRemoteGateways": false,
+          "remoteVirtualNetwork": {
+            "id": "[resourceId(parameters('ResourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('vnetremote'))]"
+          }
+        }
+      },
+      {
+        "apiVersion": "2019-11-01",
+        "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+        "name": "[concat(variables('vnetremote'),'/peering-to-hub-vnet','-',parameters('environment'))]",
+        "location": "[parameters('location')]",
+        "comments": "This is the peering from bluevnet to spokevnet",
+        "properties": {
+          "allowVirtualNetworkAccess": true,
+          "allowForwardedTraffic": false,
+          "allowGatewayTransit": false,
+          "useRemoteGateways": false,
+          "remoteVirtualNetwork": {
+            "id": "[resourceId(parameters('ResourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('vnetlocal'))]"
+          }
+        }
+      }
+    ]
+  }

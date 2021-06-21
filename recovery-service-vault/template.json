@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "name of environment"
+            }
+        },
+        "SkuName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the SKU to implement"
+            }
+        },
+        "SkuTier": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU tier"
+            }
+        },
+        "RSVname": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of recovery services vault"
+            }
+        },
+        "resourcetags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags related to this resource"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "RSVname": "[concat(parameters('RSVname'),'-',parameters('environment'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('RSVname')]",
+            "type": "Microsoft.RecoveryServices/vaults",
+            "apiVersion": "2018-01-10",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('resourcetags')]",
+            "identity": {
+             "type": "SystemAssigned" // enables managed identity on the vault
+            },
+            "sku": {
+                "name": "[parameters('SkuName')]",
+                "tier": "[parameters('SkuTier')]"
+            },
+            "properties": {
+            }
+        }
+    ],
+    "outputs": {}
+}

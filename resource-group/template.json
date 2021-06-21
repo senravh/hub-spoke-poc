@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Blue or Green"
+            }
+        },
+        "RGs": {
+            "type": "array",
+            "metadata": {
+                "description": "Contains names of all resource groups to deploy"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "", //This value is comming from the script as an inline parameter
+            "metadata": {
+                "description": "location of the resource group and all resources deployed "
+            }
+        },
+        "resourcetags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags related to this resource"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('environment'),'-',parameters('RGs')[copyIndex('RGs')].RgName)]", //using $environment(Blue or green) as part of resource name
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2019-10-01",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('resourcetags')]",
+            "copy": {
+                "name": "RGs",
+                "count":"[length(parameters('RGs'))]"
+            }
+        }
+    ],
+    "outputs": {}
+}

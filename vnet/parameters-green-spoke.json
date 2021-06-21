@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "value": "green"
+        },
+        "vnetName": {
+            "value": "spoke-vnet"
+        },
+        "vnetAddressPrefix": {
+            "value": "10.1.0.0/16"
+        },
+        "subnetsConfiguration": {
+            "value": [
+                {
+                    "name": "WebSubnet-green",
+                    "addressPrefix": "10.1.0.0/24",
+                    "nsgName": "WebSubnet-nsg",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                },
+                {
+                    "name": "DbSubnet-green",
+                    "addressPrefix": "10.1.1.0/24",
+                    "nsgName": "DbSubnet-nsg",
+                    "privateEndpointNetworkPolicies": "Enabled"
+                }
+            ]
+        }
+    }
+}

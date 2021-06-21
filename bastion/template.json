@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type":"string",
+            "metadata": {
+                "description": "Blue or Green"
+            }
+        },
+        "bastion-host-name": {
+            "type": "string",
+            "metadata": {
+                "description": "name of bastion host"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "metadata": {
+                "description": "sku of the public IP"
+            }
+        },
+        "publicIPAllocationMethod": {
+            "type": "string",
+            "metadata": {
+                "description": "Static or dynamic public IP"
+            }
+        },
+        "resourcetags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags related to this resource"
+            }
+        }       
+    },
+    "functions": [],
+    "variables": {
+         "vnetname": "[concat('hub-vnet-',parameters('environment'))]",
+        "public-ip-address-name": "[concat(parameters('bastion-host-name'),'-pip-',parameters('environment'))]",
+        "dnsname": "[concat(parameters('bastion-host-name'),'-dns-',parameters('environment'))]",
+        "bastion-subnet-name": "AzureBastionSubnet"
+    },
+    "resources": [
+        {
+            "name": "[variables('public-ip-address-name')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-11-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "tags": "[parameters('resourcetags')]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+            }
+        },
+        {
+            "apiVersion": "2020-05-01",
+            "type": "Microsoft.Network/bastionHosts",
+            "name": "[concat(parameters('bastion-host-name'),'-',parameters('environment'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', variables('public-ip-address-name'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetname'), variables('bastion-subnet-name'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('public-ip-address-name'))]"
+                            }
+                        }
+                    }
+                ],
+                "dnsName": "[variables('dnsname')]"
+            }
+        }
+    ],
+    "outputs": {}
+}

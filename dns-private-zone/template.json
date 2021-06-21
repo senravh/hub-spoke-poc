@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "privateDnsZoneSettings": {
+            "type": "array",
+            "metadata": {
+                "description": "Array with the nummer of Zones to create and all related properties"
+            }
+        }   
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('privateDnsZoneSettings')[copyIndex('ZoneSettings')].properties.PrivateDnsZoneName)]",
+            "type": "Microsoft.Network/privatednsZones",
+            "apiVersion": "2018-09-01",
+            "location": "global",
+            "copy": {
+                "name": "ZoneSettings",
+                "count":"[length(parameters('privateDnsZoneSettings'))]"
+            },
+            "properties": {}
+        }
+    ],
+    "outputs": {}
+}

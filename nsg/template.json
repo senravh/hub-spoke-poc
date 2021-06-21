@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of environment. blue/green"
+            }
+        },
+        "NSGs": {
+            "type": "array"
+        },
+        "resourcetags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags related to this resource"
+            }
+        }       
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "name": "[concat(parameters('NSGs')[copyIndex('NSGs')].properties.NSGName,'-',parameters('environment') )]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('resourcetags')]",
+            "copy": {
+                "name": "NSGs",
+                "count":"[length(parameters('NSGs'))]"
+            },
+            "properties": {
+                "securityRules": "[parameters('NSGs')[copyIndex('NSGs')].properties.SecurityRules]"
+            }
+        }
+    ],
+    "outputs": {}
+}
