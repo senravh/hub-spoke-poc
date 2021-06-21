@@ -1,9 +1,15 @@
 # hub&spoke-poc
 Hub&spoke Proof of consept with blue/green deployment. Everything deployed in one resource group (easy to clean up/delete deployment)
 
+![Hub spokePOC](https://user-images.githubusercontent.com/16702714/122814569-b0709500-d2d4-11eb-95ac-eacde70769e2.png)
+
+
 ### How to deploy this design
 * Tested and deployd from Visual studio code. 
 * Run deploy.ps1 from the root of the repository with $environment parameter blue/green and $location parameter northeurope/westeurope. The master deploy.ps1 will kick of the rest of the deployment.
+
+![deploy](https://user-images.githubusercontent.com/16702714/122814554-a9e21d80-d2d4-11eb-951f-8a4a77f0a511.PNG)
+
 
 ### What is actually deployed here
 * Vnets with a hub&spoke design. 
