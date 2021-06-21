@@ -1,5 +1,5 @@
 # hub&spoke-poc
-Hub&spoke Proof of consept with blue/green deployment. Everything deployed in one resource group (easy to clean up/delete deployment)
+Hub&spoke Proof of consept with blue/green deployment in mind. Everything deployed in one resource group (easy to clean up/delete deployment)
 
 ![Hub spokePOC](https://user-images.githubusercontent.com/16702714/122814569-b0709500-d2d4-11eb-95ac-eacde70769e2.png)
 
